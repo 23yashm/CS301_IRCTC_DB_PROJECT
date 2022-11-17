@@ -1,9 +1,0 @@
------ FROM: X -> TO: Z -----
-1234 - A: X -> Y ------1.0------ 5432 - B: Y -> Z
-
------ FROM: M -> TO: O -----
-2334 - D: M -> N ------2.0------ 7889 - E: N -> O
-
------ FROM: Una_Himachal -> TO: Jaipur -----
-12058 - Una Himachal - New Delhi Jan Shatabdi Express: Una_Himachal -> New_Delhi ------0.33333206------ 9602 - NJP UDZ SPECIAL: New_Delhi -> Jaipur
-

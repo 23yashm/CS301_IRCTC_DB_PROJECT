@@ -1,8 +1,10 @@
+
+import java.util.*;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService ;
 import java.util.concurrent.Executors   ;
 import java.util.concurrent.TimeUnit;
-import java.util.*;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -61,7 +63,7 @@ public class release_train
                 String database = "db_proj";
                 String port = "5432";
                 String username = "postgres";
-                String password = "yash";
+                String password = "9308561049";
 
                 c = DriverManager.getConnection("jdbc:postgresql://" + server 
                                                 + ":" + port 

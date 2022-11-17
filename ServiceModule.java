@@ -145,7 +145,7 @@ class QueryRunner implements Runnable
                     String database = "db_proj";
                     String port = "5432";
                     String username = "postgres";
-                    String password = "yash";
+                    String password = "9308561049";
 
                     c = DriverManager.getConnection("jdbc:postgresql://" + server 
                                                     + ":" + port 
@@ -155,10 +155,11 @@ class QueryRunner implements Runnable
 
                     
                     String time1 = Long.toString(System.currentTimeMillis());
-                    time1 = time1.substring(time1.length()-7,time1.length());
+                    // train_no = train_no.substring(0,4);
+                    time1 = time1.substring(time1.length()-1,time1.length());
                     // System.out.println(time1);
 
-                    String pnr = train_no + date.substring(0,4) + date.substring(5,7) + date.substring(8,10) + time1;
+                    String pnr = train_no + date.substring(0,4) + date.substring(5,7) + date.substring(8,10) ;
                     // System.out.println(pnr);
 
                     String query = "select * from book_ticket("+
@@ -166,8 +167,9 @@ class QueryRunner implements Runnable
                         "'{"+pass_name_str+"}'::text[],"+
                         train_no+","+  
                         "'"+date+"'::date,"+ 
-                        "'"+coach_type+"'::text,"+
-                        pnr+");";
+                        "'"+coach_type+"'::text," + 
+                        pnr+"::bigint);";
+                        // System.out.println(query);
 
                     try {
                         Statement stmt = c.createStatement();
@@ -175,7 +177,8 @@ class QueryRunner implements Runnable
                         String status = "";
                         System.out.println(status);
                         while (rs.next()) {
-                            status = rs.getString("book_ticket");
+                            status = rs.getString("status__");
+                            pnr = rs.getString("pnr__");
                         }
                         if (status.equals("-1")){
                             responseQuery = "TNA -- ";

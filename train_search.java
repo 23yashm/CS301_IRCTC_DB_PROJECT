@@ -74,7 +74,7 @@ public class train_search
                     String database = "db_proj";
                     String port = "5432";
                     String username = "postgres";
-                    String password = "yash";
+                    String password = "9308561049";
 
                     c = DriverManager.getConnection("jdbc:postgresql://" + server 
                                                     + ":" + port 
