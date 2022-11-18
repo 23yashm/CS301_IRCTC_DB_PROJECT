@@ -29,6 +29,9 @@ CS301_IRCTC_DB_PROJECT
 ```
 
 ---
+**Add data into PGSQL Database**
+* Copy and paste queries from the file ```./init.sql```
+---
 **Compile the credentials**
 * Update the credentials in the ```./creds.java``` file.
 * Compile the ```./creds.java``` file using
