@@ -1,7 +1,3 @@
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService ;
-import java.util.concurrent.Executors   ;
-import java.util.concurrent.TimeUnit;
 import java.util.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,19 +13,20 @@ public class client
 {
     public static void main(String args[])throws IOException
     {
-        for (int j=1 ; j<=2 ; j++){
+        int pools = 2;      // No of pools
+        int threads = 50;   // No of threads
 
-            int numberOfusers = 50 ;   // Indicate no of users 
+        for (int j=1 ; j<=pools ; j++){     
             // Creating a thread pool
-            ExecutorService executorService = Executors.newFixedThreadPool(numberOfusers) ;
+            ExecutorService executorService = Executors.newFixedThreadPool(threads) ;
             
-            for(int i = 0; i < numberOfusers; i++)
+            for(int i = 0; i < threads; i++)
             {
-                Runnable runnableTask = new sendQuery()  ;    //  Pass arg if any as sendQuery(arg)
+                Runnable runnableTask = new sendQuery();
                 executorService.submit(runnableTask);
             }
             
-            executorService.shutdown()  ;
+            executorService.shutdown();
             try
             {
                 if (!executorService.awaitTermination(900, TimeUnit.MILLISECONDS))
@@ -48,10 +45,6 @@ public class client
 class sendQuery implements Runnable
 {
     int sockPort = 7005 ;
-    // public sendQuery(int arg)            // constructor to get arguments from the main thread
-    // {
-    //    // arg from main thread
-    // }
     
     public void run()
     {
@@ -65,11 +58,9 @@ class sendQuery implements Runnable
             String outputfile = "./output/" + Thread.currentThread().getName() + "_output.txt" ;
 
             //-----Initialising the Input & ouput file-streams and buffers-------
-            OutputStreamWriter outputStream = new OutputStreamWriter(socketConnection
-                                                                     .getOutputStream());
+            OutputStreamWriter outputStream = new OutputStreamWriter(socketConnection.getOutputStream());
             BufferedWriter bufferedOutput = new BufferedWriter(outputStream);
-            InputStreamReader inputStream = new InputStreamReader(socketConnection
-                                                                  .getInputStream());
+            InputStreamReader inputStream = new InputStreamReader(socketConnection.getInputStream());
             BufferedReader bufferedInput = new BufferedReader(inputStream);
             PrintWriter printWriter = new PrintWriter(bufferedOutput,true);
             File queries = new File(inputfile); 

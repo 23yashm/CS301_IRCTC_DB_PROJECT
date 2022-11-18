@@ -1,8 +1,3 @@
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService ;
-import java.util.concurrent.Executors   ;
-import java.util.concurrent.TimeUnit;
-import java.util.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.*;
 import java.sql.*;
 import creds.*;
 
@@ -66,7 +62,6 @@ public class train_search
                 dep_station = Q[0];
                 arr_station = Q[1];
             
-
                 filewriter.write("----- FROM: "+dep_station+" -> TO: "+arr_station+" -----\n");
             
                 Connection c = null;
@@ -75,19 +70,13 @@ public class train_search
                 List<Train> arr_train = new ArrayList<>();
 
                 try {
-                    // Class.forName("org.postgresql.Driver");
-
                     String server = creds.server;
                     String database = creds.database;
                     String port = creds.port;
                     String username = creds.username;
                     String password = creds.password;
 
-                    c = DriverManager.getConnection("jdbc:postgresql://" + server 
-                                                    + ":" + port 
-                                                    + "/" + database, 
-                                                    username, 
-                                                    password);
+                    c = DriverManager.getConnection("jdbc:postgresql://" + server + ":" + port + "/" + database, username, password);
 
                     String sql_query1 = "select * from train_station_info where dep_station='"+dep_station+"';";
                     String sql_query2 = "select * from train_station_info where arr_station='"+arr_station+"';";
@@ -103,7 +92,6 @@ public class train_search
                             temp.dep_time = Float.parseFloat(rs.getString("dep_time"));
                             temp.arr_station = rs.getString("arr_station");
                             temp.run_duration = Float.parseFloat(rs.getString("run_duration"));
-                            
                             dep_train.add(temp);
                         }
                     } catch (Exception e) {
@@ -172,36 +160,27 @@ public class train_search
                         }
                     }
 
-
                     if (total_routes==0){
                         filewriter.write("Sorry, no trains availaible for this route.\n");
                     }
                     filewriter.write("\n");
                     
-
                     c.close();
-                    
-
 
                 } catch (Exception e) {
                     System.out.println(e);
                 }
             }
-            // close the buffers
+
             System.out.println("---------- Train release status saved in " + outputfile + " ----------");
             
             filewriter.close();
             sc.close();
-
-            
-            
         }
         catch (IOException e1)
         {
             e1.printStackTrace();
         }
-
-
     } 
 }
 
@@ -213,5 +192,3 @@ public class Train{
     String arr_station;
     float run_duration;
 }
-
-// java -cp .;org.jdbc_driver.jar train_search.java

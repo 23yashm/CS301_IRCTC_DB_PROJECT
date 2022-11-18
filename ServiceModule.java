@@ -9,94 +9,55 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import creds.*;
-
-// java -cp .;org.jdbc_driver.jar ServiceModule.java
-
-
 import java.sql.*;
 
-/**
- * Main Class to controll the program flow
- */
-public class ServiceModule 
-{
-    
+public class ServiceModule {
     static int serverPort = 7005;
-    static int numServerCores = 50 ;
-    //------------ Main----------------------
-    public static void main(String[] args) throws IOException 
-    {           
-        // Creating a thread pool
+    static int numServerCores = 50;  // Number of cores
+
+    public static void main(String[] args) throws IOException{           
         ExecutorService executorService = Executors.newFixedThreadPool(numServerCores);
-        
-        //Creating a server socket to listen for clients
-        ServerSocket serverSocket = new ServerSocket(serverPort); //need to close the port
+        ServerSocket serverSocket = new ServerSocket(serverPort);
         Socket socketConnection = null;
         
-        // Always-ON server
-        while(true)
-        {
-            System.out.println("Listening port : " + serverPort 
-                                + "\nWaiting for clients...");
-            socketConnection = serverSocket.accept();   // Accept a connection from a client
-            System.out.println("Accepted client :" 
-                                + socketConnection.getRemoteSocketAddress().toString() 
-                                + "\n");
-            //  Create a runnable task
+        while(true){
+            System.out.println("Listening port : " + serverPort + "\nWaiting for clients...");
+            socketConnection = serverSocket.accept();
+            System.out.println("Accepted client :" + socketConnection.getRemoteSocketAddress().toString() + "\n");
             Runnable runnableTask = new QueryRunner(socketConnection);
-            //  Submit task for execution   
             executorService.submit(runnableTask);   
         }
     }
 }
 
 
-class QueryRunner implements Runnable
-{
-    //  Declare socket for client access
+class QueryRunner implements Runnable{
     protected Socket socketConnection;
-
-    public QueryRunner(Socket clientSocket)
-    {
+    public QueryRunner(Socket clientSocket){
         this.socketConnection =  clientSocket;
     }
 
-    public void run()
-    {
-        
-      try
-        {
-            //  Reading data from client
-            InputStreamReader inputStream = new InputStreamReader(socketConnection
-                                                                  .getInputStream()) ;
-            BufferedReader bufferedInput = new BufferedReader(inputStream) ;
-            OutputStreamWriter outputStream = new OutputStreamWriter(socketConnection
-                                                                     .getOutputStream()) ;
-            BufferedWriter bufferedOutput = new             BufferedWriter(outputStream) ;
+    public void run(){
+        try{
+            InputStreamReader inputStream = new InputStreamReader(socketConnection.getInputStream()) ;
+            BufferedReader bufferedInput = new BufferedReader(inputStream);
+            OutputStreamWriter outputStream = new OutputStreamWriter(socketConnection.getOutputStream()) ;
+            BufferedWriter bufferedOutput = new BufferedWriter(outputStream) ;
             PrintWriter printWriter = new PrintWriter(bufferedOutput, true) ;
             
             String clientCommand = "" ;
             String responseQuery = "" ;
             String queryInput = "" ;
 
-            while(true)
-            {
-                // Read client query
+            while(true){
                 clientCommand = bufferedInput.readLine();
-                // System.out.println("Recieved data <" + clientCommand + "> from client : " 
-                //                     + socketConnection.getRemoteSocketAddress().toString());
-
-                //  Tokenize here
                 StringTokenizer tokenizer = new StringTokenizer(clientCommand);
                 queryInput = tokenizer.nextToken();
 
-                if(queryInput.equals("#"))
-                {
+                if(queryInput.equals("#")){
                     printWriter.println("#");
-                    String returnMsg = "Connection Terminated - client : " 
-                                        + socketConnection.getRemoteSocketAddress().toString();
+                    String returnMsg = "Connection Terminated - client : " + socketConnection.getRemoteSocketAddress().toString();
                     System.out.println(returnMsg);
                     inputStream.close();
                     bufferedInput.close();
@@ -107,12 +68,11 @@ class QueryRunner implements Runnable
                     return;
                 }
 
-                //-------------- extracting passenger info ------------------------
                 int pass_num = Integer.parseInt(queryInput);
                 String pass_name[] = new String[pass_num];
                 String pass_name_str = "";
 
-                for (int i=0 ; i<pass_num ; i++) {
+                for (int i=0 ; i<pass_num ; i++){
                     queryInput = tokenizer.nextToken();
                     if (i!=pass_num-1){
                         queryInput = queryInput.substring(0,queryInput.length()-1);
@@ -127,38 +87,18 @@ class QueryRunner implements Runnable
                 String date = queryInput = tokenizer.nextToken();
                 String coach_type = queryInput = tokenizer.nextToken();
 
-                // for (int i=0 ; i<pass_num ; i++)
-                //     System.out.println(pass_name[i]);
-                // System.out.println(train_no);
-                // System.out.println(date);
-                // System.out.println(coach_type);
-
-                //-----------------------------------------------------------------
-
-
-                //-------------- your DB code goes here----------------------------
-
-                // responseQuery = "******* Dummy result ******";
-                // System.out.println("1");
                 Connection c = null;
 
                 try {
-                    // Class.forName("org.postgresql.Driver");
-
                     String server = creds.server;
                     String database = creds.database;
                     String port = creds.port;
                     String username = creds.username;
                     String password = creds.password;
 
-                    c = DriverManager.getConnection("jdbc:postgresql://" + server 
-                                                    + ":" + port 
-                                                    + "/" + database, 
-                                                    username, 
-                                                    password);
+                    c = DriverManager.getConnection("jdbc:postgresql://" + server + ":" + port + "/" + database, username, password);
 
                     String pnr = train_no + date.substring(0,4) + date.substring(5,7) + date.substring(8,10) ;
-                    // System.out.println(pnr);
 
                     String query = "select * from book_ticket("+
                         Integer.toString(pass_num)+"::int,"+  
@@ -167,13 +107,11 @@ class QueryRunner implements Runnable
                         "'"+date+"'::date,"+ 
                         "'"+coach_type+"'::text," + 
                         pnr+"::bigint);";
-                        // System.out.println(query);
 
                     try {
                         Statement stmt = c.createStatement();
                         ResultSet rs = stmt.executeQuery(query);
                         String status = "";
-                        // System.out.println(status);
                         while (rs.next()) {
                             status = rs.getString("status__");
                             pnr = rs.getString("pnr__");
@@ -209,21 +147,11 @@ class QueryRunner implements Runnable
                         System.out.println(e);
                     }
                     c.close();
-
-
                 } catch (Exception e) {
                     System.out.println(e);
                 }
 
-               
-
-                //----------------------------------------------------------------
-                
-                //  Sending data back to the client
-                printWriter.println(responseQuery); 
-                // System.out.println("\nSent results to client - " 
-                //                     + socketConnection.getRemoteSocketAddress().toString() );
-                
+                printWriter.println(responseQuery);                
             }
         }
         catch(IOException e)

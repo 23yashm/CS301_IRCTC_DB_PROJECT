@@ -1,10 +1,3 @@
-
-import java.util.*;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService ;
-import java.util.concurrent.Executors   ;
-import java.util.concurrent.TimeUnit;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.*;
 import creds.*;
 import java.sql.*;
 
@@ -30,7 +24,6 @@ public class release_train
             FileWriter filewriter = new FileWriter(output);
             Scanner sc = new Scanner(queries);
             String query = "";
-
             int num_train = 0;
             String train_no_string = "";
             String date_string = "";
@@ -50,6 +43,7 @@ public class release_train
                 ac_coach_string = ac_coach_string + Q[2] + ",";
                 sl_coach_string = sl_coach_string + Q[3] + ",";
             }
+
             train_no_string = train_no_string.substring(0,train_no_string.length()-1);
             date_string = date_string.substring(0,date_string.length()-1);
             ac_coach_string = ac_coach_string.substring(0,ac_coach_string.length()-1);
@@ -58,19 +52,13 @@ public class release_train
             Connection c = null;
 
             try {
-                Class.forName("org.postgresql.Driver");
-
                 String server = creds.server;
                 String database = creds.database;
                 String port = creds.port;
                 String username = creds.username;
                 String password = creds.password;
 
-                c = DriverManager.getConnection("jdbc:postgresql://" + server 
-                                                + ":" + port 
-                                                + "/" + database, 
-                                                username, 
-                                                password);
+                c = DriverManager.getConnection("jdbc:postgresql://" + server + ":" + port + "/" + database, username, password);
 
                 String sql_query = "select * from release_trains("+
                     Integer.toString(num_train)+"::int,"+  
@@ -95,24 +83,16 @@ public class release_train
 
                 System.out.println("---------- Train release status saved in " + outputfile + " ----------");
 
-
                 // close the buffers
                 filewriter.close();
                 sc.close();
-
-
             } catch (Exception e) {
                 System.out.println(e);
             }
-            
         }
         catch (IOException e1)
         {
             e1.printStackTrace();
         }
-
-
     } 
 }
-
-// java -cp .;org.jdbc_driver.jar release_train.java
