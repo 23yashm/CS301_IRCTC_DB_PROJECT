@@ -1,9 +1,13 @@
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException  ;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -14,13 +18,13 @@ public class client
     public static void main(String args[])throws IOException
     {
         int pools = 2;      // No of pools
-        int threads = 50;   // No of threads
+        int threads_ = 50;   // No of threads
 
         for (int j=1 ; j<=pools ; j++){     
             // Creating a thread pool
-            ExecutorService executorService = Executors.newFixedThreadPool(threads) ;
+            ExecutorService executorService = Executors.newFixedThreadPool(threads_) ;
             
-            for(int i = 0; i < threads; i++)
+            for(int i = 0; i < threads_; i++)
             {
                 Runnable runnableTask = new sendQuery();
                 executorService.submit(runnableTask);
