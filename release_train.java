@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import creds.*;
 import java.sql.*;
 
 public class release_train
@@ -59,11 +60,11 @@ public class release_train
             try {
                 Class.forName("org.postgresql.Driver");
 
-                String server = "localhost";
-                String database = "db_proj";
-                String port = "5432";
-                String username = "postgres";
-                String password = "yash";
+                String server = creds.server;
+                String database = creds.database;
+                String port = creds.port;
+                String username = creds.username;
+                String password = creds.password;
 
                 c = DriverManager.getConnection("jdbc:postgresql://" + server 
                                                 + ":" + port 

@@ -13,6 +13,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.*;
+import creds.*;
 
 public class train_search
 {
@@ -31,6 +32,13 @@ public class train_search
         }
         if (diff>=10/60 && diff<=3) return true;
         else return false;
+    }
+
+    public static String time24(float t){
+        int h = (int)t;
+        int m = (int)((t-h)*60);
+        String ans = h + ":" + m;
+        return ans;
     }
 
     public static void main(String args[])throws IOException
@@ -60,7 +68,6 @@ public class train_search
             
 
                 filewriter.write("----- FROM: "+dep_station+" -> TO: "+arr_station+" -----\n");
-                System.out.println("----- FROM: "+dep_station+" -> TO: "+arr_station+" -----\n");
             
                 Connection c = null;
 
@@ -68,13 +75,13 @@ public class train_search
                 List<Train> arr_train = new ArrayList<>();
 
                 try {
-                    Class.forName("org.postgresql.Driver");
+                    // Class.forName("org.postgresql.Driver");
 
-                    String server = "localhost";
-                    String database = "db_proj";
-                    String port = "5432";
-                    String username = "postgres";
-                    String password = "yash";
+                    String server = creds.server;
+                    String database = creds.database;
+                    String port = creds.port;
+                    String username = creds.username;
+                    String password = creds.password;
 
                     c = DriverManager.getConnection("jdbc:postgresql://" + server 
                                                     + ":" + port 
@@ -125,8 +132,19 @@ public class train_search
                     for (int i=0 ; i<dep_train.size() ; i++){
                         if (dep_train.get(i).arr_station.equals(arr_station)){
                             total_routes = total_routes+1;
-                            filewriter.write(dep_train.get(i).train_no + " " + dep_train.get(i).train_name + "\n");
-                        }            
+
+                            String t1 = dep_train.get(i).train_name;
+                            String tn1 = dep_train.get(i).train_no;
+
+                            String dep1 = dep_train.get(i).dep_station;
+                            String arr1 = dep_train.get(i).arr_station;
+                            Float t_dep1 = dep_train.get(i).dep_time;
+                            Float t_arr1 = time_conv(t_dep1 + dep_train.get(i).run_duration);
+
+                            Float total_time = dep_train.get(i).run_duration;
+
+                            filewriter.write(time24(total_time) + " | " + tn1 + " - " + t1 + ": " + dep1 + "(" + time24(t_dep1) + ")" + " -> " + arr1 + "(" + time24(t_arr1) + ")" + "\n");
+                        }
                     }
 
                     for (int i=0 ; i<dep_train.size() ; i++){
@@ -144,16 +162,19 @@ public class train_search
                             Float t_arr1 = time_conv(t_dep1 + dep_train.get(i).run_duration);
                             Float t_dep2 = arr_train.get(j).dep_time;
                             Float t_arr2 = time_conv(t_dep2 + arr_train.get(j).run_duration);
+
+                            Float total_time = dep_train.get(i).run_duration + time_conv(t_dep2-t_arr1+24) + arr_train.get(j).run_duration;
+
                             if (arr1.equals(dep2) && compatible(t_arr1,t_dep2)){
                                 total_routes = total_routes+1;
-                                filewriter.write(tn1 + " - " + t1 + ": " + dep1 + " -> " + arr1 + " ------" + time_conv(t_dep2-t_arr1+24) + "------ " + tn2 + " - " + t2 + ": " + dep2 + " -> " + arr2 + "\n");
+                                filewriter.write(time24(total_time) + " | " + tn1 + " - " + t1 + ": " + dep1 + "(" + time24(t_dep1) + ")" + " -> " + arr1 + "(" + time24(t_arr1) + ")" + " ------" + time24(time_conv(t_dep2-t_arr1+24)) + "------ " + tn2 + " - " + t2 + ": " + dep2 + "(" + time24(t_dep2) + ")" + " -> " + arr2 + "(" + time24(t_arr2) + ")" + "\n");
                             }
                         }
                     }
 
 
                     if (total_routes==0){
-                        filewriter.write("Sorry, mo trains availaible for this route.\n");
+                        filewriter.write("Sorry, no trains availaible for this route.\n");
                     }
                     filewriter.write("\n");
                     

@@ -10,6 +10,10 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import creds.*;
+
+// java -cp .;org.jdbc_driver.jar ServiceModule.java
+
 
 import java.sql.*;
 
@@ -20,7 +24,7 @@ public class ServiceModule
 {
     
     static int serverPort = 7005;
-    static int numServerCores = 2 ;
+    static int numServerCores = 50 ;
     //------------ Main----------------------
     public static void main(String[] args) throws IOException 
     {           
@@ -139,25 +143,19 @@ class QueryRunner implements Runnable
                 Connection c = null;
 
                 try {
-                    Class.forName("org.postgresql.Driver");
+                    // Class.forName("org.postgresql.Driver");
 
-                    String server = "localhost";
-                    String database = "db_proj";
-                    String port = "5432";
-                    String username = "postgres";
-                    String password = "yash";
+                    String server = creds.server;
+                    String database = creds.database;
+                    String port = creds.port;
+                    String username = creds.username;
+                    String password = creds.password;
 
                     c = DriverManager.getConnection("jdbc:postgresql://" + server 
                                                     + ":" + port 
                                                     + "/" + database, 
                                                     username, 
                                                     password);
-
-                    
-                    String time1 = Long.toString(System.currentTimeMillis());
-                    // train_no = train_no.substring(0,4);
-                    time1 = time1.substring(time1.length()-1,time1.length());
-                    // System.out.println(time1);
 
                     String pnr = train_no + date.substring(0,4) + date.substring(5,7) + date.substring(8,10) ;
                     // System.out.println(pnr);
@@ -175,7 +173,7 @@ class QueryRunner implements Runnable
                         Statement stmt = c.createStatement();
                         ResultSet rs = stmt.executeQuery(query);
                         String status = "";
-                        System.out.println(status);
+                        // System.out.println(status);
                         while (rs.next()) {
                             status = rs.getString("status__");
                             pnr = rs.getString("pnr__");
@@ -189,7 +187,7 @@ class QueryRunner implements Runnable
                             responseQuery = responseQuery + "PNR: " + pnr;
                         }
                         else{
-                            query = "select * from ticket_pass T where T.pnr="+pnr+";";
+                            query = "select * from ticket_pass T, berth_info B where T.pnr="+pnr+" and B.coach_type='"+coach_type+"' and T.berth_no=B.berth_no;";
                             stmt = c.createStatement();
                             rs = stmt.executeQuery(query);
                             responseQuery = "CNF -- ";
@@ -201,7 +199,8 @@ class QueryRunner implements Runnable
                                 String name = rs.getString("name");
                                 String coach_no = rs.getString("coach_no");
                                 String berth_no = rs.getString("berth_no");
-                                responseQuery = responseQuery + " ; " + name + " - " + coach_type.substring(0,1) + coach_no + "/" + berth_no;
+                                String berth_type = rs.getString("berth_type");
+                                responseQuery = responseQuery + " ; " + name + " - " + coach_type.substring(0,1) + coach_no + "/" + berth_no + "/" + berth_type;
                             }
                         }
                         pnr = "";
@@ -233,5 +232,3 @@ class QueryRunner implements Runnable
         }
     }
 }
-
-// java -cp .;org.jdbc_driver.jar ServiceModule.java

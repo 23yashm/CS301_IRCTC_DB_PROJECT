@@ -1,0 +1,11 @@
+Amritsar_JN Jaipur
+Chandigarh Yesvantpur_JN
+Una_Himachal Jaipur
+Una_Himachal New_Delhi
+Una_Himachal Yesvantpur_JN
+Una_Himachal KSR_Bangalore_CY_JN
+Daulatpur_Chowk Sabarmati_BG
+Chittaurgarh_Junction Udaipur_City
+Kalka Yesvantpur_JN
+Kalka Jaipur
+#

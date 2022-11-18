@@ -17,9 +17,9 @@ public class client
 {
     public static void main(String args[])throws IOException
     {
-        for (int j=1 ; j<=5 ; j++){
+        for (int j=1 ; j<=2 ; j++){
 
-            int numberOfusers = 30 ;   // Indicate no of users 
+            int numberOfusers = 50 ;   // Indicate no of users 
             // Creating a thread pool
             ExecutorService executorService = Executors.newFixedThreadPool(numberOfusers) ;
             
