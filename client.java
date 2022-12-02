@@ -16,32 +16,21 @@ import java.net.Socket;
 public class client
 {
     public static void main(String args[])throws IOException
-    {
-        int pools = 2;      // No of pools
-        int threads_ = 50;   // No of threads
-
+    {   
+        double start_time = System.nanoTime();
+        int pools = 4;      // No of pools
+        int threads_ = 2;   // No of threads
+ 
         for (int j=1 ; j<=pools ; j++){     
-            // Creating a thread pool
             ExecutorService executorService = Executors.newFixedThreadPool(threads_) ;
             
             for(int i = 0; i < threads_; i++)
             {
-                Runnable runnableTask = new sendQuery();
+                Runnable runnableTask = new sendQuery(start_time);
                 executorService.submit(runnableTask);
             }
             
             executorService.shutdown();
-            try
-            {
-                if (!executorService.awaitTermination(900, TimeUnit.MILLISECONDS))
-                {
-                    executorService.shutdownNow();
-                } 
-            } 
-            catch (InterruptedException e)
-            {
-                executorService.shutdownNow();
-            }
         }
     }
 }
@@ -49,6 +38,12 @@ public class client
 class sendQuery implements Runnable
 {
     int sockPort = 7005 ;
+    double start_time = 0;
+    double end_time = 0;
+
+    public sendQuery(double start_time1) {
+        start_time = start_time1;
+    }
     
     public void run()
     {
@@ -58,7 +53,7 @@ class sendQuery implements Runnable
             Socket socketConnection = new Socket("localhost", sockPort) ;
             
             // Files for input queries and responses
-            String inputfile = "./input/" + Thread.currentThread().getName() + "_input.txt" ;
+            String inputfile = "./input/input_8/" + Thread.currentThread().getName() + "_input.txt" ;
             String outputfile = "./output/" + Thread.currentThread().getName() + "_output.txt" ;
 
             //-----Initialising the Input & ouput file-streams and buffers-------
@@ -100,5 +95,10 @@ class sendQuery implements Runnable
         {
             e1.printStackTrace();
         }
+
+        end_time = System.nanoTime();
+        double total_time = end_time-start_time;
+        System.out.println("Total Time taken is: " +  total_time);
+        
     }
 }

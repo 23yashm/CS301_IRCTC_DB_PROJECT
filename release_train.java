@@ -17,7 +17,7 @@ public class release_train
     {
         try 
         {
-            String inputfile = "./input/Trainschedule.txt";
+            String inputfile = "./input/Trainschedule_throughput.txt";
             String outputfile = "./output/Trainschedule_status.txt";
             File queries = new File(inputfile); 
             File output = new File(outputfile); 
